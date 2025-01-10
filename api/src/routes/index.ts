@@ -16,6 +16,15 @@ router.get('/user/:id', (req: Request, res: Response) => {
   }
 });
 
+router.put('/user/:id', (req: Request, res: Response) => {
+  try {
+    const user = UserService.update(req.params.id, req.body);
+    return res.status(200).json(user);
+  } catch (error) {
+    return res.status(500).json({ error: 'server internal error' });
+  }
+});
+
 router.use('*', (_, res) => {
   return res.status(404).json({ error: 'not found' });
 });

@@ -10,7 +10,14 @@ function Home() {
   const [count, setCount] = useState(0);
 
   async function getApiData() {
-    const { data } = await api.get('/api/user/1');
+    // const { data } = await api.get('/api/user/1');
+    // alert(`Message from api: ${JSON.stringify(data, null, 2)}`);
+
+    const { data } = await api.put('/api/user/1', {
+      name: 'John Doeee',
+      email: 'john.doe@example.comm',
+      phone: '12345678901',
+    });
     alert(`Message from api: ${JSON.stringify(data, null, 2)}`);
   }
 
