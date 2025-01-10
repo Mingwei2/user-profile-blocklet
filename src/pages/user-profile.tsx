@@ -2,6 +2,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import {
+  Alert,
   Box,
   Button,
   Card,
@@ -11,6 +12,7 @@ import {
   CircularProgress,
   Container,
   Divider,
+  Snackbar,
   TextField,
   ThemeProvider,
   Typography,
@@ -18,7 +20,9 @@ import {
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { z } from 'zod';
 
+import { updateUserSchema } from '../../schemas/user-schema';
 import { User } from '../../types/user';
 import api from '../libs/api';
 
@@ -63,6 +67,8 @@ export default function UserProfile() {
   const [tempData, setTempData] = useState<Partial<User> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -87,9 +93,42 @@ export default function UserProfile() {
     loadUserData();
   }, [id]);
 
+  const validateField = (name: string, value: string) => {
+    try {
+      updateUserSchema.shape[name as keyof typeof updateUserSchema.shape].parse(value);
+      setFormErrors((prev) => ({ ...prev, [name]: '' }));
+      return true;
+    } catch (e) {
+      if (e instanceof z.ZodError) {
+        setFormErrors((prev) => ({
+          ...prev,
+          [name]: e.errors[0]?.message || '',
+        }));
+      }
+      return false;
+    }
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    validateField(name, value);
     setTempData((prev) => (prev ? { ...prev, [name]: value } : null));
+  };
+
+  const validateForm = () => {
+    const result = updateUserSchema.safeParse(tempData);
+    if (!result.success) {
+      const errors: Record<string, string> = {};
+      result.error.errors.forEach((err) => {
+        if (err.path[0]) {
+          errors[err.path[0].toString()] = err.message;
+        }
+      });
+      setFormErrors(errors);
+      return false;
+    }
+    setFormErrors({});
+    return true;
   };
 
   const handleSave = async () => {
@@ -97,11 +136,17 @@ export default function UserProfile() {
       setIsEditing(false);
       return;
     }
-    setUserData(tempData);
-    setIsEditing(false);
+
+    if (!validateForm()) {
+      return;
+    }
+
     try {
       setIsLoading(true);
       await api.put(`/api/user/${id}`, tempData);
+      setUserData(tempData);
+      setIsEditing(false);
+      setShowSuccess(true);
       setIsLoading(false);
     } catch (err) {
       setError('Failed to save user data');
@@ -112,6 +157,7 @@ export default function UserProfile() {
   const handleCancel = () => {
     setTempData(userData);
     setIsEditing(false);
+    setFormErrors({});
   };
 
   if (isLoading) {
@@ -120,16 +166,6 @@ export default function UserProfile() {
         maxWidth="sm"
         sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
         <CircularProgress />
-      </Container>
-    );
-  }
-
-  if (error || !userData) {
-    return (
-      <Container
-        maxWidth="sm"
-        sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <Typography color="error">{error || 'User data not available'}</Typography>
       </Container>
     );
   }
@@ -155,14 +191,16 @@ export default function UserProfile() {
 
           <CardContent>
             {isEditing ? (
-              <Box component="form" noValidate autoComplete="off">
+              <Box component="section">
                 <TextField
                   fullWidth
                   label="name"
                   name="name"
                   value={tempData?.name || ''}
                   onChange={handleInputChange}
-                  sx={{ mt: 1, mb: 2 }}
+                  error={!!formErrors.name}
+                  helperText={formErrors.name}
+                  sx={{ mt: 2, mb: 3 }}
                 />
                 <TextField
                   fullWidth
@@ -171,7 +209,9 @@ export default function UserProfile() {
                   type="email"
                   value={tempData?.email || ''}
                   onChange={handleInputChange}
-                  sx={{ mt: 1, mb: 2 }}
+                  error={!!formErrors.email}
+                  helperText={formErrors.email}
+                  sx={{ mt: 2, mb: 3 }}
                 />
                 <TextField
                   fullWidth
@@ -179,11 +219,13 @@ export default function UserProfile() {
                   name="phone"
                   value={tempData?.phone || ''}
                   onChange={handleInputChange}
-                  sx={{ mt: 1, mb: 2 }}
+                  error={!!formErrors.phone}
+                  helperText={formErrors.phone}
+                  sx={{ mt: 2, mb: 3 }}
                 />
               </Box>
             ) : (
-              <Box>
+              <Box component="section">
                 <Typography variant="body2" color="text.secondary">
                   name
                 </Typography>
@@ -222,6 +264,24 @@ export default function UserProfile() {
             )}
           </CardActions>
         </Card>
+        <Snackbar
+          open={showSuccess}
+          autoHideDuration={3000}
+          onClose={() => setShowSuccess(false)}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
+          <Alert severity="success" onClose={() => setShowSuccess(false)}>
+            Successfully saved!
+          </Alert>
+        </Snackbar>
+        <Snackbar
+          open={error !== null}
+          autoHideDuration={3000}
+          onClose={() => setError(null)}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
+          <Alert severity="error" onClose={() => setError(null)}>
+            Something went wrong
+          </Alert>
+        </Snackbar>
       </Container>
     </ThemeProvider>
   );

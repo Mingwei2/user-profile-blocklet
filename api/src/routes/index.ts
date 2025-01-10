@@ -18,24 +18,21 @@ router.get('/user/:id', (req: Request, res: Response) => {
 });
 
 router.put('/user/:id', (req: Request, res: Response) => {
-  // wait 5 seconds
-  setTimeout(() => {
-    try {
-      const result = updateUserSchema.safeParse(req.body);
-      if (!result.success) {
-        return res.status(400).json({
-          error: 'Invalid input',
-          details: result.error.issues,
-        });
-      }
-
-      const user = UserService.update(req.params.id, req.body);
-      return res.status(200).json(user);
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ error: 'server internal error' });
+  try {
+    const result = updateUserSchema.safeParse(req.body);
+    if (!result.success) {
+      return res.status(400).json({
+        error: 'Invalid input',
+        details: result.error?.issues,
+      });
     }
-  }, 5000);
+
+    const user = UserService.update(req.params.id, req.body);
+    return res.status(200).json(user);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'server internal error' });
+  }
 });
 
 router.use('*', (_, res) => {
