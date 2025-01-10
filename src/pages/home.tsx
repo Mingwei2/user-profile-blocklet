@@ -1,3 +1,4 @@
+import { Button } from '@mui/material';
 import { useState } from 'react';
 
 import blockletLogo from '../assets/blocklet.svg';
@@ -41,9 +42,9 @@ function Home() {
         </button>
         <br />
         <br />
-        <button type="button" onClick={getApiData}>
+        <Button type="button" onClick={() => getApiData()}>
           Get API Data
-        </button>
+        </Button>
         <p>
           Edit <code>src/app.tsx</code> and save to test HMR
         </p>
