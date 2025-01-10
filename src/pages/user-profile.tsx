@@ -93,17 +93,19 @@ export default function UserProfile() {
   };
 
   const handleSave = async () => {
-    if (tempData) {
-      setUserData(tempData);
+    if (!tempData || JSON.stringify(tempData) === JSON.stringify(userData)) {
       setIsEditing(false);
-      try {
-        setIsLoading(true);
-        await api.put(`/api/user/${id}`, tempData);
-        setIsLoading(false);
-      } catch (err) {
-        setError('Failed to save user data');
-        setIsLoading(false);
-      }
+      return;
+    }
+    setUserData(tempData);
+    setIsEditing(false);
+    try {
+      setIsLoading(true);
+      await api.put(`/api/user/${id}`, tempData);
+      setIsLoading(false);
+    } catch (err) {
+      setError('Failed to save user data');
+      setIsLoading(false);
     }
   };
 
