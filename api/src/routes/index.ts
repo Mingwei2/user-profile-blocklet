@@ -1,14 +1,23 @@
-import middlewares from '@blocklet/sdk/lib/middlewares';
-import { Router } from 'express';
+import { Request, Response, Router } from 'express';
+
+import UserService from '../services/user.service';
 
 const router = Router();
 
-router.use('/user', middlewares.session(), (req, res) => res.json(req.user || {}));
+router.get('/user/:id', (req: Request, res: Response) => {
+  try {
+    const user = UserService.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ error: 'user not found' });
+    }
+    return res.status(200).json(user);
+  } catch (error) {
+    return res.status(500).json({ error: 'server internal error' });
+  }
+});
 
-router.use('/data', (_, res) =>
-  res.json({
-    message: 'Hello Blocklet!',
-  }),
-);
+router.use('*', (_, res) => {
+  return res.status(404).json({ error: 'not found' });
+});
 
 export default router;
