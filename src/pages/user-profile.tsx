@@ -135,13 +135,20 @@ export default function UserProfile() {
   return (
     <ThemeProvider theme={theme}>
       <Container
-        maxWidth="md"
+        maxWidth="sm"
         sx={{
-          py: 4,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '100vh',
           width: '100%',
-          minWidth: '800px',
+          px: { xs: 2, sm: 3 },
         }}>
-        <Card>
+        <Card
+          sx={{
+            width: '100%',
+            maxWidth: { xs: '100%', sm: '1000px' },
+          }}>
           <CardHeader title="User Profile" />
 
           <CardContent>

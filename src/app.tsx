@@ -1,14 +1,12 @@
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 
-import Home from './pages/home';
 import UserProfile from './pages/user-profile';
 
 function App() {
   return (
     <div className="app">
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="*" element={<Navigate to="/" />} />
+        <Route path="*" element={<Navigate to="/user/1" />} />
         <Route path="/user/:id" element={<UserProfile />} />
       </Routes>
     </div>
