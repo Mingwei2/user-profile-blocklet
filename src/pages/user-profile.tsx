@@ -1,10 +1,7 @@
 import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
-import TranslateIcon from '@mui/icons-material/Translate';
 import {
-  Alert,
-  Box,
   Button,
   Card,
   CardActions,
@@ -12,15 +9,7 @@ import {
   CardHeader,
   CircularProgress,
   Container,
-  Divider,
-  IconButton,
-  Menu,
-  MenuItem,
-  Snackbar,
-  TextField,
   ThemeProvider,
-  Typography,
-  createTheme,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -29,41 +18,12 @@ import { z } from 'zod';
 
 import { updateUserSchema } from '../../schemas/user-schema';
 import { User } from '../../types/user';
+import LanguageSwitch from '../components/language-switch';
+import Toast from '../components/toast';
+import DisplayInfo from '../components/user-profile/display-info';
+import EditForm from '../components/user-profile/edit-form';
 import api from '../libs/api';
-
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#0078D4',
-    },
-  },
-  components: {
-    MuiCard: {
-      styleOverrides: {
-        root: {
-          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-          borderRadius: '8px',
-        },
-      },
-    },
-    MuiCardHeader: {
-      styleOverrides: {
-        root: {
-          backgroundColor: '#0078D4',
-          color: 'white',
-        },
-      },
-    },
-    MuiCardActions: {
-      styleOverrides: {
-        root: {
-          backgroundColor: '#f5f5f5',
-          padding: '16px',
-        },
-      },
-    },
-  },
-});
+import theme from '../theme';
 
 export default function UserProfile() {
   const { id } = useParams<{ id: string }>();
@@ -74,8 +34,7 @@ export default function UserProfile() {
   const [error, setError] = useState<string | null>(null);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [showSuccess, setShowSuccess] = useState(false);
-  const { t, i18n } = useTranslation();
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -167,17 +126,6 @@ export default function UserProfile() {
     setFormErrors({});
   };
 
-  const handleLanguageClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleLanguageClose = (lang?: string) => {
-    setAnchorEl(null);
-    if (lang) {
-      i18n.changeLanguage(lang);
-    }
-  };
-
   if (isLoading) {
     return (
       <Container
@@ -205,77 +153,13 @@ export default function UserProfile() {
             width: '100%',
             maxWidth: { xs: '100%', sm: '1000px' },
           }}>
-          <CardHeader
-            title={t('user_profile')}
-            action={
-              <>
-                <IconButton onClick={handleLanguageClick} color="inherit">
-                  <TranslateIcon />
-                </IconButton>
-                <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={() => handleLanguageClose()}>
-                  <MenuItem onClick={() => handleLanguageClose('en')}>English</MenuItem>
-                  <MenuItem onClick={() => handleLanguageClose('zh')}>中文</MenuItem>
-                </Menu>
-              </>
-            }
-          />
+          <CardHeader title={t('user_profile')} action={<LanguageSwitch color="inherit" />} />
 
           <CardContent>
             {isEditing ? (
-              <Box component="section">
-                <TextField
-                  fullWidth
-                  label={t('name')}
-                  name="name"
-                  value={tempData?.name || ''}
-                  onChange={handleInputChange}
-                  error={!!formErrors.name}
-                  helperText={formErrors.name ? t('name_field_error') : null}
-                  sx={{ mt: 2, mb: 3 }}
-                />
-                <TextField
-                  fullWidth
-                  label={t('email')}
-                  name="email"
-                  type="email"
-                  value={tempData?.email || ''}
-                  onChange={handleInputChange}
-                  error={!!formErrors.email}
-                  helperText={formErrors.email ? t('email_field_error') : null}
-                  sx={{ mt: 2, mb: 3 }}
-                />
-                <TextField
-                  fullWidth
-                  label={t('phone')}
-                  name="phone"
-                  value={tempData?.phone || ''}
-                  onChange={handleInputChange}
-                  error={!!formErrors.phone}
-                  helperText={formErrors.phone ? t('phone_field_error') : null}
-                  sx={{ mt: 2, mb: 3 }}
-                />
-              </Box>
+              <EditForm tempData={tempData} formErrors={formErrors} handleInputChange={handleInputChange} />
             ) : (
-              <Box component="section">
-                <Typography variant="body2" color="text.secondary">
-                  {t('name')}
-                </Typography>
-                <Typography variant="body1" gutterBottom>
-                  {userData?.name}
-                </Typography>
-                <Divider sx={{ my: 2 }} />
-                <Typography variant="body2" color="text.secondary">
-                  {t('email')}
-                </Typography>
-                <Typography variant="body1" gutterBottom>
-                  {userData?.email}
-                </Typography>
-                <Divider sx={{ my: 2 }} />
-                <Typography variant="body2" color="text.secondary">
-                  {t('phone')}
-                </Typography>
-                <Typography variant="body1">{userData?.phone}</Typography>
-              </Box>
+              <DisplayInfo userData={userData} />
             )}
           </CardContent>
           <CardActions sx={{ justifyContent: 'flex-end' }}>
@@ -295,24 +179,19 @@ export default function UserProfile() {
             )}
           </CardActions>
         </Card>
-        <Snackbar
+        <Toast
           open={showSuccess}
-          autoHideDuration={3000}
           onClose={() => setShowSuccess(false)}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
-          <Alert severity="success" onClose={() => setShowSuccess(false)}>
-            {t('successfully_saved')}
-          </Alert>
-        </Snackbar>
-        <Snackbar
+          severity="success"
+          messageKey="successfully_saved"
+        />
+        <Toast
           open={error !== null}
-          autoHideDuration={3000}
           onClose={() => setError(null)}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
-          <Alert severity="error" onClose={() => setError(null)}>
-            {t('something_went_wrong')}
-          </Alert>
-        </Snackbar>
+          severity="error"
+          messageKey="something_went_wrong"
+          position={{ vertical: 'bottom', horizontal: 'center' }}
+        />
       </Container>
     </ThemeProvider>
   );
