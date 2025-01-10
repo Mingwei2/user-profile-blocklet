@@ -1,5 +1,5 @@
+import { User } from '../../../types/user';
 import db from '../libs/database';
-import { User } from '../types/user.type';
 
 export default class UserService {
   static findById(id: string | undefined): User | null {

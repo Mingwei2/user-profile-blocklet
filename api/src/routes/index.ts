@@ -1,6 +1,7 @@
 import { Request, Response, Router } from 'express';
 
-import UserService from '../services/user.service';
+import { updateUserSchema } from '../../../schemas/user-schema';
+import UserService from '../services/user-service';
 
 const router = Router();
 
@@ -18,9 +19,18 @@ router.get('/user/:id', (req: Request, res: Response) => {
 
 router.put('/user/:id', (req: Request, res: Response) => {
   try {
+    const result = updateUserSchema.safeParse(req.body);
+    if (!result.success) {
+      return res.status(400).json({
+        error: 'Invalid input',
+        details: result.error.issues,
+      });
+    }
+
     const user = UserService.update(req.params.id, req.body);
     return res.status(200).json(user);
   } catch (error) {
+    console.error(error);
     return res.status(500).json({ error: 'server internal error' });
   }
 });
