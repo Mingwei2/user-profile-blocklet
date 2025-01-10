@@ -2,7 +2,7 @@ import Database from 'better-sqlite3';
 
 import logger from './logger';
 
-const DB_FILE = '.blocklet/data/database.sqlite';
+const DB_FILE = 'db/database.sqlite';
 const db = (() => {
   try {
     const database = new Database(DB_FILE);
