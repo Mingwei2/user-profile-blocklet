@@ -1,5 +1,6 @@
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 
+import './i18n';
 import UserProfile from './pages/user-profile';
 
 function App() {

@@ -1,0 +1,14 @@
+{
+  "user_profile": "用户资料",
+  "name": "用户名",
+  "email": "邮箱",
+  "phone": "电话",
+  "edit": "编辑",
+  "save": "保存",
+  "cancel": "取消",
+  "successfully_saved": "保存成功！",
+  "something_went_wrong": "出错了",
+  "name_field_error": "用户名长度必须在3到20个字符之间",
+  "email_field_error": "邮箱格式错误",
+  "phone_field_error": "手机号长度必须在10到11个字符之间"
+} 

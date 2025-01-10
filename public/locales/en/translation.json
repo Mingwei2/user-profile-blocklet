@@ -1,0 +1,14 @@
+{
+  "user_profile": "User Profile",
+  "name": "Name",
+  "email": "Email",
+  "phone": "Phone",
+  "edit": "Edit",
+  "save": "Save",
+  "cancel": "Cancel",
+  "successfully_saved": "Successfully saved!",
+  "something_went_wrong": "Something went wrong",
+  "name_field_error": "Name must between 3 and 20 characters long",
+  "email_field_error": "Invalid email address",
+  "phone_field_error": "Phone must between 10 and 11 characters long"
+} 

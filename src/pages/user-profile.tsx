@@ -1,6 +1,7 @@
 import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
+import TranslateIcon from '@mui/icons-material/Translate';
 import {
   Alert,
   Box,
@@ -12,6 +13,9 @@ import {
   CircularProgress,
   Container,
   Divider,
+  IconButton,
+  Menu,
+  MenuItem,
   Snackbar,
   TextField,
   ThemeProvider,
@@ -19,6 +23,7 @@ import {
   createTheme,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { z } from 'zod';
 
@@ -69,6 +74,8 @@ export default function UserProfile() {
   const [error, setError] = useState<string | null>(null);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [showSuccess, setShowSuccess] = useState(false);
+  const { t, i18n } = useTranslation();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -160,6 +167,17 @@ export default function UserProfile() {
     setFormErrors({});
   };
 
+  const handleLanguageClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleLanguageClose = (lang?: string) => {
+    setAnchorEl(null);
+    if (lang) {
+      i18n.changeLanguage(lang);
+    }
+  };
+
   if (isLoading) {
     return (
       <Container
@@ -187,61 +205,74 @@ export default function UserProfile() {
             width: '100%',
             maxWidth: { xs: '100%', sm: '1000px' },
           }}>
-          <CardHeader title="User Profile" />
+          <CardHeader
+            title={t('user_profile')}
+            action={
+              <>
+                <IconButton onClick={handleLanguageClick} color="inherit">
+                  <TranslateIcon />
+                </IconButton>
+                <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={() => handleLanguageClose()}>
+                  <MenuItem onClick={() => handleLanguageClose('en')}>English</MenuItem>
+                  <MenuItem onClick={() => handleLanguageClose('zh')}>中文</MenuItem>
+                </Menu>
+              </>
+            }
+          />
 
           <CardContent>
             {isEditing ? (
               <Box component="section">
                 <TextField
                   fullWidth
-                  label="name"
+                  label={t('name')}
                   name="name"
                   value={tempData?.name || ''}
                   onChange={handleInputChange}
                   error={!!formErrors.name}
-                  helperText={formErrors.name}
+                  helperText={formErrors.name ? t('name_field_error') : null}
                   sx={{ mt: 2, mb: 3 }}
                 />
                 <TextField
                   fullWidth
-                  label="email"
+                  label={t('email')}
                   name="email"
                   type="email"
                   value={tempData?.email || ''}
                   onChange={handleInputChange}
                   error={!!formErrors.email}
-                  helperText={formErrors.email}
+                  helperText={formErrors.email ? t('email_field_error') : null}
                   sx={{ mt: 2, mb: 3 }}
                 />
                 <TextField
                   fullWidth
-                  label="phone"
+                  label={t('phone')}
                   name="phone"
                   value={tempData?.phone || ''}
                   onChange={handleInputChange}
                   error={!!formErrors.phone}
-                  helperText={formErrors.phone}
+                  helperText={formErrors.phone ? t('phone_field_error') : null}
                   sx={{ mt: 2, mb: 3 }}
                 />
               </Box>
             ) : (
               <Box component="section">
                 <Typography variant="body2" color="text.secondary">
-                  name
+                  {t('name')}
                 </Typography>
                 <Typography variant="body1" gutterBottom>
                   {userData?.name}
                 </Typography>
                 <Divider sx={{ my: 2 }} />
                 <Typography variant="body2" color="text.secondary">
-                  email
+                  {t('email')}
                 </Typography>
                 <Typography variant="body1" gutterBottom>
                   {userData?.email}
                 </Typography>
                 <Divider sx={{ my: 2 }} />
                 <Typography variant="body2" color="text.secondary">
-                  phone
+                  {t('phone')}
                 </Typography>
                 <Typography variant="body1">{userData?.phone}</Typography>
               </Box>
@@ -251,15 +282,15 @@ export default function UserProfile() {
             {isEditing ? (
               <>
                 <Button startIcon={<CloseIcon />} onClick={handleCancel} variant="outlined">
-                  cancel
+                  {t('cancel')}
                 </Button>
                 <Button startIcon={<SaveIcon />} onClick={handleSave} variant="contained" color="primary">
-                  save
+                  {t('save')}
                 </Button>
               </>
             ) : (
               <Button startIcon={<EditIcon />} onClick={() => setIsEditing(true)} variant="contained" color="primary">
-                edit
+                {t('edit')}
               </Button>
             )}
           </CardActions>
@@ -270,7 +301,7 @@ export default function UserProfile() {
           onClose={() => setShowSuccess(false)}
           anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
           <Alert severity="success" onClose={() => setShowSuccess(false)}>
-            Successfully saved!
+            {t('successfully_saved')}
           </Alert>
         </Snackbar>
         <Snackbar
@@ -279,7 +310,7 @@ export default function UserProfile() {
           onClose={() => setError(null)}
           anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
           <Alert severity="error" onClose={() => setError(null)}>
-            Something went wrong
+            {t('something_went_wrong')}
           </Alert>
         </Snackbar>
       </Container>
