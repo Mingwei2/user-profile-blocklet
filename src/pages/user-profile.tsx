@@ -24,6 +24,7 @@ import DisplayInfo from '../components/user-profile/display-info';
 import EditForm from '../components/user-profile/edit-form';
 import api from '../libs/api';
 import theme from '../theme';
+import { validateField, validateForm } from '../utils/validation';
 
 export default function UserProfile() {
   const { id } = useParams<{ id: string }>();
@@ -59,42 +60,10 @@ export default function UserProfile() {
     loadUserData();
   }, [id]);
 
-  const validateField = (name: string, value: string) => {
-    try {
-      updateUserSchema.shape[name as keyof typeof updateUserSchema.shape].parse(value);
-      setFormErrors((prev) => ({ ...prev, [name]: '' }));
-      return true;
-    } catch (e) {
-      if (e instanceof z.ZodError) {
-        setFormErrors((prev) => ({
-          ...prev,
-          [name]: e.errors[0]?.message || '',
-        }));
-      }
-      return false;
-    }
-  };
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    validateField(name, value);
+    validateField(updateUserSchema as z.ZodObject<any>, name, value, setFormErrors);
     setTempData((prev) => (prev ? { ...prev, [name]: value } : null));
-  };
-
-  const validateForm = () => {
-    const result = updateUserSchema.safeParse(tempData);
-    if (!result.success) {
-      const errors: Record<string, string> = {};
-      result.error.errors.forEach((err) => {
-        if (err.path[0]) {
-          errors[err.path[0].toString()] = err.message;
-        }
-      });
-      setFormErrors(errors);
-      return false;
-    }
-    setFormErrors({});
-    return true;
   };
 
   const handleSave = async () => {
@@ -103,7 +72,7 @@ export default function UserProfile() {
       return;
     }
 
-    if (!validateForm()) {
+    if (!validateForm(updateUserSchema as z.ZodObject<any>, tempData, setFormErrors)) {
       return;
     }
 
