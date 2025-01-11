@@ -21,8 +21,8 @@ export default function EditForm({ tempData, formErrors, handleInputChange }: Ed
         value={tempData?.name || ''}
         onChange={handleInputChange}
         error={!!formErrors.name}
-        helperText={formErrors.name ? t('name_field_error') : null}
-        sx={{ mt: 2, mb: 3 }}
+        helperText={formErrors.name ? t('name_field_error') : ' '}
+        sx={{ mt: 2, mb: 2 }}
       />
       <TextField
         fullWidth
@@ -32,8 +32,8 @@ export default function EditForm({ tempData, formErrors, handleInputChange }: Ed
         value={tempData?.email || ''}
         onChange={handleInputChange}
         error={!!formErrors.email}
-        helperText={formErrors.email ? t('email_field_error') : null}
-        sx={{ mt: 2, mb: 3 }}
+        helperText={formErrors.email ? t('email_field_error') : ' '}
+        sx={{ mt: 2, mb: 2 }}
       />
       <TextField
         fullWidth
@@ -42,8 +42,8 @@ export default function EditForm({ tempData, formErrors, handleInputChange }: Ed
         value={tempData?.phone || ''}
         onChange={handleInputChange}
         error={!!formErrors.phone}
-        helperText={formErrors.phone ? t('phone_field_error') : null}
-        sx={{ mt: 2, mb: 3 }}
+        helperText={formErrors.phone ? t('phone_field_error') : ' '}
+        sx={{ mt: 2, mb: 2 }}
       />
     </Box>
   );

@@ -121,10 +121,12 @@ export default function UserProfile() {
           sx={{
             width: '100%',
             maxWidth: { xs: '100%', sm: '1000px' },
+            height: '500px',
+            display: 'flex',
+            flexDirection: 'column',
           }}>
           <CardHeader title={t('user_profile')} action={<LanguageSwitch color="inherit" />} />
-
-          <CardContent>
+          <CardContent sx={{ flexGrow: 1 }}>
             {isEditing ? (
               <EditForm tempData={tempData} formErrors={formErrors} handleInputChange={handleInputChange} />
             ) : (
