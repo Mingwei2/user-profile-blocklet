@@ -1,8 +1,11 @@
-# Getting Started with Create Blocklet
+# A simple user profile web app
 
-This project was bootstrapped with [Create Blocklet](https://github.com/blocklet/create-blocklet).
+This project was bootstrapped with [Create Blocklet](https://github.com/blocklet/create-blocklet) and based on Express + React + Typescript template.
 
-This blocklet is a dapp project, which means this is a full-stack application. It's contained both `server` and `client` code.
+## Feature
+- Basic user profile editing functionality
+- Form field validation
+- Support for i18n internationalization
 
 ## File Structure
 
