@@ -10,5 +10,6 @@
   "something_went_wrong": "Something went wrong",
   "name_field_error": "Name must between 3 and 20 characters long",
   "email_field_error": "Invalid email address",
-  "phone_field_error": "Phone must between 10 and 11 characters long"
-} 
+  "phone_field_error": "Phone must between 10 and 11 characters long",
+  "user_not_found": "User not found"
+}

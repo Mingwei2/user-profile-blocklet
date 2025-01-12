@@ -51,8 +51,13 @@ export default function UserProfile() {
         setUserData(user);
         setTempData(user);
         setIsLoading(false);
+        setError(null);
       } catch (err) {
-        setError('Failed to load user data');
+        if (err.response.status === 404) {
+          window.location.href = '/user/not-found';
+        } else {
+          setError('something_went_wrong');
+        }
         setIsLoading(false);
       }
     };
@@ -83,6 +88,7 @@ export default function UserProfile() {
       setIsEditing(false);
       setShowSuccess(true);
       setIsLoading(false);
+      setError(null);
     } catch (err) {
       setError('Failed to save user data');
       setIsLoading(false);
@@ -160,7 +166,7 @@ export default function UserProfile() {
           open={error !== null}
           onClose={() => setError(null)}
           severity="error"
-          messageKey="something_went_wrong"
+          messageKey={error || 'something_went_wrong'}
           position={{ vertical: 'bottom', horizontal: 'center' }}
         />
       </Container>

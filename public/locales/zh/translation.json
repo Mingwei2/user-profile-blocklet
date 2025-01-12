@@ -10,5 +10,6 @@
   "something_went_wrong": "出错了",
   "name_field_error": "用户名长度必须在3到20个字符之间",
   "email_field_error": "邮箱格式错误",
-  "phone_field_error": "手机号长度必须在10到11个字符之间"
-} 
+  "phone_field_error": "手机号长度必须在10到11个字符之间",
+  "user_not_found": "用户不存在"
+}
